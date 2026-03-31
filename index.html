@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据看板 - 可视化分析工具</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📊 数据看板</h1>
+            <p class="subtitle">上传数据，自动生成可视化分析</p>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="upload-section">
+                    <h2>📁 数据上传</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📤</div>
+                        <p>拖拽文件到此，或点击选择</p>
+                        <small>支持格式：CSV、Excel (.xlsx, .xls)</small>
+                    </div>
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+                    
+                    <div class="file-info" id="fileInfo" style="display:none;">
+                        <p id="fileName"></p>
+                        <p id="fileSize"></p>
+                        <button class="btn-clear" onclick="clearFile()">清除文件</button>
+                    </div>
+
+                    <div class="options-section">
+                        <h3>📈 图表配置</h3>
+                        <label>
+                            <input type="checkbox" id="showBarChart" checked> 柱状图
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showLineChart" checked> 折线图
+                        </label>
+                        <label>
+                            <input type="checkbox" id="showPieChart" checked> 饼图
+                        </label>
+                    </div>
+
+                    <div class="data-preview">
+                        <h3>📋 数据预览</h3>
+                        <div id="dataPreview" class="preview-table">
+                            <p style="color: #999;">数据加载后显示</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="dashboard">
+                <div class="charts-container" id="chartsContainer">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <p>请上传数据文件开始分析</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
