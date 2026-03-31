@@ -2,24 +2,141 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>文件上传DEMO</title>
+    <title>可视化数据分析看板（极简一体化）</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        body { background:#f4f8fc; font-family:'Microsoft YaHei',Arial; }
+        .board { max-width:500px; background:#fff; margin:40px auto; border-radius:14px; box-shadow:0 4px 24px #0001; padding:28px 28px 34px; }
+        .title { font-size:2rem; color:#3080e8; font-weight:700; letter-spacing:2px; text-align:center; margin-bottom:16px;}
+        .section { margin-bottom:32px;}
+        .section h2 {font-size:1.2rem;color:#3080e8;margin-bottom:10px;}
+        .upload-area { cursor:pointer;border:2px dashed #3080e8;background:#f2f7fd;padding:34px 16px;text-align:center;border-radius:10px;font-size:1.08rem;transition:all .2s;}
+        .upload-area.dragover { background:#e2f0fc; border-color:#33a1fd;}
+        .upload-hint {color:#666;}
+        .fileinfo {color:#888; margin-top:6px;}
+        .btn { display:block;width:100%;padding:12px;background:#3080e8;color:#fff;border:none;border-radius:7px; font-size:1rem; margin-top:15px; cursor:pointer; font-weight:600;letter-spacing:1px;transition:background .2s;}
+        .btn[disabled]{background:#b2d3fa;color:#eee;cursor:not-allowed;}
+        .preview { margin:18px 0;}
+        .preview table { border-collapse:collapse; width:100%; background:#fafbff; }
+        .preview th,.preview td {border:1px solid #e2e2ee;padding:4px 10px;font-size:.98em;}
+        .preview th{background:#e0eeff;}
+        .stats {background:#f6fcff;padding:10px 16px;margin-top:12px; border-radius:7px;}
+    </style>
 </head>
 <body>
-    <h2>上传CSV测试</h2>
-    <input type="file" id="fileInput" />
-    <div id="output"></div>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script>
-        document.getElementById('fileInput').addEventListener('change', function(e){
-            var file = e.target.files[0];
-            Papa.parse(file, {
-                header: true,
-                complete: function(results) {
-                    document.getElementById('output').textContent =
-                        JSON.stringify(results.data, null, 2);
+<div class="board">
+    <div class="title">数据看板</div>
+    <div class="section">
+        <h2>数据上传</h2>
+        <div id="uploadArea" class="upload-area">
+            <div class="upload-hint">点击或拖拽文件到这里上传<br><small>支持CSV、Excel(.xlsx/.xls)</small></div>
+        </div>
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" style="display:none;">
+        <div class="fileinfo" id="fileinfo"></div>
+        <button class="btn" id="analyzeBtn" disabled>确认分析</button>
+    </div>
+    <div class="section">
+        <h2>数据预览&统计</h2>
+        <div class="preview" id="preview"></div>
+        <div class="stats" id="stats"></div>
+    </div>
+</div>
+<script>
+let uploadedData = null;
+let fileinfo = document.getElementById('fileinfo');
+
+document.getElementById('uploadArea').addEventListener('click',()=>fileInput.click());
+document.getElementById('uploadArea').addEventListener('dragover',e=>{e.preventDefault();uploadArea.classList.add('dragover')});
+document.getElementById('uploadArea').addEventListener('dragleave',()=>uploadArea.classList.remove('dragover'));
+document.getElementById('uploadArea').addEventListener('drop',function(e){
+    e.preventDefault();uploadArea.classList.remove('dragover');
+    if(!e.dataTransfer.files.length) return;
+    handleFile(e.dataTransfer.files[0]);
+});
+document.getElementById('fileInput').addEventListener('change',function(e){
+    if(!this.files.length) return;
+    handleFile(this.files[0]);
+});
+
+function handleFile(file){
+    uploadedData = null;
+    document.getElementById('analyzeBtn').disabled = true;
+    fileinfo.textContent = '';
+    document.getElementById('preview').innerHTML='';
+    document.getElementById('stats').innerHTML='';
+
+    if(!file) return;
+    fileinfo.textContent = `文件：${file.name} (${(file.size/1024).toFixed(1)}KB)`;
+
+    if(file.name.match(/\\.csv$/i)){
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if(results.data && results.data.length){
+                    uploadedData = results.data;
+                    previewData(uploadedData);
+                    document.getElementById('analyzeBtn').disabled=false;
+                }else{
+                    fileinfo.textContent = "文件为空或格式有误";
                 }
-            });
+            }
         });
-    </script>
+    }else if(file.name.match(/\\.(xlsx|xls)$/i)){
+        let reader = new FileReader();
+        reader.onload = function(e){
+            let wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+            let ws = wb.Sheets[wb.SheetNames[0]];
+            uploadedData = XLSX.utils.sheet_to_json(ws);
+            if(uploadedData.length){
+                previewData(uploadedData);
+                document.getElementById('analyzeBtn').disabled=false;
+            }else{
+                fileinfo.textContent = "Excel内容为空";
+            }
+        }
+        reader.readAsArrayBuffer(file);
+    }else{
+        fileinfo.textContent = "仅支持CSV、Excel";
+    }
+}
+
+// 预览前10行
+function previewData(data){
+    let html = '<table><tr>';
+    let cols = Object.keys(data[0]||{});
+    html += cols.map(h=>`<th>${h}</th>`).join('');
+    html += '</tr>';
+    data.slice(0,10).forEach(row=>{
+        html += '<tr>' + cols.map(c=>`<td>${row[c]??''}</td>`).join('') + '</tr>';
+    });
+    html += '</table>';
+    document.getElementById('preview').innerHTML = html;
+}
+
+document.getElementById('analyzeBtn').onclick = function(){
+    if(!uploadedData) return;
+    analyzeData(uploadedData);
+}
+
+// 简单基础分析
+function analyzeData(data){
+    let cols = Object.keys(data[0]||{});
+    let statsHtml = '';
+    cols.forEach(col=>{
+        // 只统计全是数字的列
+        let nums = data.map(r=>+r[col]).filter(v=>!isNaN(v));
+        if(nums.length>0 && nums.length>=data.length*0.6){
+            let sum = nums.reduce((a,b)=>a+b,0);
+            let avg = (sum/nums.length).toFixed(2);
+            let min = Math.min(...nums);
+            let max = Math.max(...nums);
+            statsHtml += `<b>${col}</b>：总和=${sum}，均值=${avg}，最小=${min}，最大=${max}<br>`;
+        }
+    });
+    document.getElementById('stats').innerHTML = statsHtml?statsHtml:'未发现可分析的数值列';
+}
+</script>
 </body>
 </html>
