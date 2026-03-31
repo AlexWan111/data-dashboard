@@ -1,40 +1,34 @@
 // script.js
 
-// Functionality for file upload
+// Function to handle file upload
 function handleFileUpload(event) {
     const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = e.target.result;
-            const parsedData = parseData(data);
-            visualizeData(parsedData);
-        };
-        reader.readAsText(file);
-    }
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const data = e.target.result;
+        visualizeData(data);
+    };
+
+    reader.readAsText(file);
 }
 
-// Functionality to parse data
-function parseData(data) {
-    // Assuming data is in CSV format
-    const rows = data.split('\n');
-    const parsedData = rows.map(row => row.split(','));
-    return parsedData;
-}
+// Function to visualize data
+function visualizeData(data) {
+    const jsonData = JSON.parse(data);
+    const chartData = jsonData.map(item => ({
+        x: item.label,
+        y: item.value
+    }));
 
-// Functionality for chart visualization
-function visualizeData(parsedData) {
+    // Example visualization using Chart.js
     const ctx = document.getElementById('myChart').getContext('2d');
-    const labels = parsedData.map(row => row[0]); // Assuming first column is labels
-    const dataValues = parsedData.map(row => parseFloat(row[1])); // Assuming second column is values
-
-    const chart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels,
             datasets: [{
-                label: 'Dataset',
-                data: dataValues,
+                label: 'Data Visualization',
+                data: chartData,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
@@ -50,5 +44,5 @@ function visualizeData(parsedData) {
     });
 }
 
-// Event listener for file input
+// Attach the file input change event listener
 document.getElementById('fileInput').addEventListener('change', handleFileUpload);
