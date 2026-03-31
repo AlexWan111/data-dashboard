@@ -1,0 +1,335 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #F5A623;
+    --success-color: #7ED321;
+    --danger-color: #D0021B;
+    --bg-color: #F7F9FC;
+    --card-bg: #FFFFFF;
+    --text-dark: #333333;
+    --text-light: #999999;
+    --border-color: #E8E8E8;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #357ABD 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header .subtitle {
+    font-size: 1.1em;
+    opacity: 0.95;
+}
+
+.main-content {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    min-height: calc(100vh - 180px);
+}
+
+.sidebar {
+    width: 320px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
+
+.sidebar h2 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.sidebar h3 {
+    font-size: 1em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.upload-section {
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    border: 2px dashed var(--primary-color);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #F0F5FF;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.upload-area:hover {
+    border-color: var(--secondary-color);
+    background-color: #FFF8F0;
+}
+
+.upload-area.dragover {
+    border-color: var(--success-color);
+    background-color: #F0FFF0;
+}
+
+.upload-icon {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.upload-area p {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.upload-area small {
+    color: var(--text-light);
+}
+
+.file-info {
+    background-color: #F5F5F5;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.file-info p {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.file-info p:first-child {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.btn-clear {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 100%;
+    margin-top: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-clear:hover {
+    background-color: #A00116;
+}
+
+.options-section {
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #F9F9F9;
+    border-radius: 6px;
+}
+
+.options-section label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+
+.options-section input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.data-preview {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.preview-table {
+    background-color: #F9F9F9;
+    border-radius: 6px;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.85em;
+}
+
+.preview-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.preview-table th,
+.preview-table td {
+    padding: 6px 4px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.preview-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+}
+
+.preview-table tr:nth-child(even) {
+    background-color: #F5F5F5;
+}
+
+.dashboard {
+    flex: 1;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 220px);
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 20px;
+}
+
+.chart-card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.chart-card h3 {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.empty-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 1.1em;
+    opacity: 0.7;
+}
+
+@media (max-width: 1200px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: none;
+    }
+
+    .charts-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .header {
+        padding: 30px 15px;
+    }
+
+    .main-content {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .sidebar {
+        padding: 15px;
+    }
+
+    .dashboard {
+        padding: 15px;
+    }
+
+    .chart-wrapper {
+        height: 250px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D0D0D0;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999999;
+}
